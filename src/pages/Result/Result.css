@@ -1,0 +1,17 @@
+.result-container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px;
+  font-family: Arial, sans-serif;
+}
+
+.result-container h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-top: 16px;
+}
+
+.result-container p {
+  margin-top: 12px;
+  color: #555;
+}
