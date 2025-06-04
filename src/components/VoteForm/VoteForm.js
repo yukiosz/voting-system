@@ -32,6 +32,7 @@ function VoteForm({ candidates, onVote }) {
           <CandidateCard
             key={idx}
             name={name}
+            isSelected={selectedCandidate === name}
             onSelect={() => setSelectedCandidate(name)}
           />
         ))}
