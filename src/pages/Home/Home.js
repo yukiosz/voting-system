@@ -1,5 +1,6 @@
 import Header from '../../components/Header/Header';
 import VoteForm from '../../components/VoteForm/VoteForm';
+import Footer from '../../components/Footer/Footer';
 import './Home.css';
 
 function Home() {
@@ -11,10 +12,14 @@ function Home() {
   };
 
   return (
+    <>
+    <Header />
     <div className="home-container">
-      <Header />
       <VoteForm candidates={candidates} onVote={handleVote} />
-    </div>
+    </div>   
+    <Footer />
+    </>
+
   );
 }
 
