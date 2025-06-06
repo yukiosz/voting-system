@@ -1,9 +1,9 @@
 .header {
-  background-color: #2563eb; /* azul similar ao bg-blue-600 */
+  background-color: #2563eb;
   color: white;
   padding: 16px;
   text-align: center;
-  font-size: 1.25rem; /* 20px */
+  font-size: 1.25rem;
   font-weight: 700;
   font-family: Arial, sans-serif;
 }

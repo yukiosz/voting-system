@@ -16,8 +16,8 @@
 }
 
 .candidate-card.selected {
-  background-color: #2563eb;  /* Cor azul para fundo */
-  color: white;               /* Texto branco */
+  background-color: #2563eb;
+  color: white;
   border: 2px solid #2563eb;
   font-weight: bold;
 }
