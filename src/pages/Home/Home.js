@@ -2,40 +2,63 @@ import { useState, useEffect } from 'react';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import VoteForm from '../../components/VoteForm/VoteForm';
+import {
+  getCandidatos,
+  votar,
+  gerarHash,
+  jaVotou,
+  totalVotos
+} from '../../web3/contractFunctions';
 import './Home.css';
 
 function Home() {
-  const candidates = ['Candidato A', 'Candidato B', 'Candidato C'];
-  const [votes, setVotes] = useState({});
+  const [candidates, setCandidates] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedVotes = JSON.parse(localStorage.getItem('votes')) || {};
-    setVotes(savedVotes);
+    async function fetchCandidates() {
+      try {
+        const list = await getCandidatos();
+        setCandidates(list);
+      } catch (error) {
+        alert('Erro ao buscar candidatos: ' + error.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchCandidates();
   }, []);
 
   const handleVote = async ({ id, password, candidate }) => {
-    if (!id || !password || !candidate) return;
+    try {
+      // Gerar hash do identificador
+      const hashId = await gerarHash(id);
 
-    const encoder = new TextEncoder();
-    const data = encoder.encode(id);
-    const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(36).padStart(2, '0')).join('');
+      // Verificar se já votou
+      const votouAntes = await jaVotou(hashId);
+      if (votouAntes) {
+        alert('Identificador já votou anteriormente.');
+        return;
+      }
 
-    const updatedVotes = {
-      ...votes,
-      [candidate]: (votes[candidate] || 0) + 1
-    };
+      // Enviar o voto para blockchain
+      await votar(hashId, candidate);
 
-    setVotes(updatedVotes);
-    localStorage.setItem('votes', JSON.stringify(updatedVotes));
+      // Buscar votos atualizados para mostrar
+      const votos = await totalVotos(candidate);
 
-    alert(
-      `🗳️ Voto registrado com sucesso!\n\n` +
-      `Identificador: ${hashHex.slice(0, 16)}...\n` +
-      `Candidato: ${candidate}`
-    );
+      alert(
+        `🗳️ Voto registrado com sucesso!\n\n` +
+        `Identificador (hash): ${hashId.slice(0, 16)}...\n` +
+        `Candidato: ${candidate}\n` +
+        `Votos atuais do candidato: ${votos}`
+      );
+    } catch (error) {
+      alert('Erro ao registrar voto: ' + error.message);
+    }
   };
+
+  if (loading) return <p>Carregando candidatos...</p>;
 
   return (
     <>
@@ -45,7 +68,6 @@ function Home() {
       </div>
       <Footer />
     </>
-
   );
 }
 

@@ -10,6 +10,9 @@ function VoteForm({ candidates, onVote }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!selectedCandidate) return alert("Selecione um candidato.");
+    if (!id) return alert("Informe o identificador.");
+    if (!password) return alert("Informe a senha.");
+
     onVote({ id, password, candidate: selectedCandidate });
   };
 
