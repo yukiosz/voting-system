@@ -1,0 +1,50 @@
+.create-election-container {
+  padding: 32px;
+  max-width: 600px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+.create-election-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2563eb;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.create-election-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.create-election-form input[type="text"],
+.create-election-form textarea {
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: Arial, sans-serif;
+}
+
+.create-election-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.create-election-form button {
+  background-color: #2563eb;
+  color: white;
+  padding: 12px 0;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.create-election-form button:hover {
+  background-color: #1e40af;
+}

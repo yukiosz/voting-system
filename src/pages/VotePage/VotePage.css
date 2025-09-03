@@ -1,0 +1,40 @@
+.vote-page {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+.vote-page h1 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #2563eb;
+}
+
+.vote-page p {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #555;
+  margin-top: 20px;
+}
+
+.vote-page .vote-form {
+  margin-top: 20px;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  .vote-page {
+    margin: 20px;
+    padding: 16px;
+  }
+
+  .vote-page h1 {
+    font-size: 1.5rem;
+  }
+}

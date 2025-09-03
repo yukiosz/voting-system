@@ -1,49 +1,67 @@
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract Votacao {
-    struct Eleitor {
-        bool votou;
+contract Eleicoes {
+    struct Eleicao {
+        string titulo;
+        string descricao;
+        string[] candidatos;
+        mapping(string => uint256) votos;
+        mapping(bytes32 => bool) eleitores;
+        bool existe;
     }
 
-    mapping(bytes32 => Eleitor) public eleitores;
-    mapping(string => uint256) public votosPorCandidato;
-    string[] public candidatos;
+    mapping(uint256 => Eleicao) private eleicoes;
+    uint256 public totalEleicoes;
 
-    constructor() {
-        // Candidatos fixos no backend
-        candidatos.push("Candidato A");
-        candidatos.push("Candidato B");
-        candidatos.push("Candidato C");
-        candidatos.push("Candidato K");
+    function criarEleicao(string memory _titulo, string memory _descricao, string[] memory _candidatos) public {
+        Eleicao storage e = eleicoes[totalEleicoes];
+        e.titulo = _titulo;
+        e.descricao = _descricao;
+        e.existe = true;
+
+        for (uint i = 0; i < _candidatos.length; i++) {
+            e.candidatos.push(_candidatos[i]);
+        }
+
+        totalEleicoes++;
     }
 
-    function votar(bytes32 hashIdentificador, string memory nomeCandidato) public {
-        require(!eleitores[hashIdentificador].votou, "Ja votou.");
+    function votar(uint256 eleicaoId, bytes32 hashIdentificador, string memory candidato) public {
+        require(eleicoes[eleicaoId].existe, "Eleicao nao encontrada");
+        require(!eleicoes[eleicaoId].eleitores[hashIdentificador], "Ja votou");
 
-        bool candidatoValido = false;
-        for (uint i = 0; i < candidatos.length; i++) {
-            if (keccak256(bytes(candidatos[i])) == keccak256(bytes(nomeCandidato))) {
-                candidatoValido = true;
+        bool valido = false;
+        for (uint i = 0; i < eleicoes[eleicaoId].candidatos.length; i++) {
+            if (keccak256(bytes(eleicoes[eleicaoId].candidatos[i])) == keccak256(bytes(candidato))) {
+                valido = true;
                 break;
             }
         }
+        require(valido, "Candidato invalido");
 
-        require(candidatoValido, "Candidato invalido.");
-
-        eleitores[hashIdentificador].votou = true;
-        votosPorCandidato[nomeCandidato]++;
+        eleicoes[eleicaoId].eleitores[hashIdentificador] = true;
+        eleicoes[eleicaoId].votos[candidato]++;
     }
 
-    function totalVotos(string memory nomeCandidato) public view returns (uint256) {
-        return votosPorCandidato[nomeCandidato];
+    function getCandidatos(uint256 eleicaoId) public view returns (string[] memory) {
+        require(eleicoes[eleicaoId].existe, "Eleicao nao encontrada");
+        return eleicoes[eleicaoId].candidatos;
     }
 
-    function getCandidatos() public view returns (string[] memory) {
-        return candidatos;
+    function totalVotos(uint256 eleicaoId, string memory candidato) public view returns (uint256) {
+        return eleicoes[eleicaoId].votos[candidato];
     }
 
-    function jaVotou(bytes32 hashIdentificador) public view returns (bool) {
-        return eleitores[hashIdentificador].votou;
+    function listarEleicoes() public view returns (string[] memory titulos, string[] memory descricoes) {
+        titulos = new string[](totalEleicoes);
+        descricoes = new string[](totalEleicoes);
+        for (uint i = 0; i < totalEleicoes; i++) {
+            titulos[i] = eleicoes[i].titulo;
+            descricoes[i] = eleicoes[i].descricao;
+        }
+    }
+
+    function jaVotou(uint256 eleicaoId, bytes32 hashIdentificador) public view returns (bool) {
+        return eleicoes[eleicaoId].eleitores[hashIdentificador];
     }
 }

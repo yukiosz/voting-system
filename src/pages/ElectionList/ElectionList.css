@@ -1,0 +1,44 @@
+.election-list-container {
+  padding: 32px;
+  font-family: Arial, sans-serif;
+}
+
+.election-list-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #2563eb;
+  text-align: center;
+}
+
+.election-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.election-card {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.election-card:hover {
+  transform: translateY(-4px);
+}
+
+.election-card h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #2563eb;
+}
+
+.election-card p {
+  font-size: 1rem;
+  color: #333;
+  line-height: 1.4;
+}

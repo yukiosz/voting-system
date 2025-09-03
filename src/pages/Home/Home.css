@@ -1,11 +1,53 @@
 .home-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  max-width: 480px;
-  width: 100%;
-  padding: 16px;
+  padding: 32px;
   font-family: Arial, sans-serif;
-  text-align: center;
+}
+
+.eleicoes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.eleicao-card {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 16px;
+  background-color: #f9f9f9;
+}
+
+.eleicao-card h2 {
+  color: #2563eb;
+  margin-bottom: 8px;
+}
+
+.eleicao-card button {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 0;
+  width: 100%;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.eleicao-card button:hover {
+  background-color: #1e40af;
+}
+
+.create-btn {
+  margin-top: 24px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  padding: 12px 0;
+  width: 100%;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.create-btn:hover {
+  background-color: #059669;
 }

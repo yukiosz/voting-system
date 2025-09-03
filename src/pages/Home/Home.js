@@ -1,70 +1,48 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { listarEleicoes } from '../../web3/contractFunctions';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
-import VoteForm from '../../components/VoteForm/VoteForm';
-import {
-  getCandidatos,
-  votar,
-  gerarHash,
-  jaVotou,
-  totalVotos
-} from '../../web3/contractFunctions';
 import './Home.css';
 
 function Home() {
-  const [candidates, setCandidates] = useState([]);
+  const [eleicoes, setEleicoes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    async function fetchCandidates() {
+    async function fetchEleicoes() {
       try {
-        const list = await getCandidatos();
-        setCandidates(list);
-      } catch (error) {
-        alert('Erro ao buscar candidatos: ' + error.message);
+        const data = await listarEleicoes();
+        setEleicoes(data);
+      } catch (err) {
+        alert('Erro ao carregar eleições: ' + err.message);
       } finally {
         setLoading(false);
       }
     }
-    fetchCandidates();
+    fetchEleicoes();
   }, []);
 
-  const handleVote = async ({ id, password, candidate }) => {
-    try {
-      // Gerar hash do identificador
-      const hashId = await gerarHash(id);
-
-      // Verificar se já votou
-      const votouAntes = await jaVotou(hashId);
-      if (votouAntes) {
-        alert('Identificador já votou anteriormente.');
-        return;
-      }
-
-      // Enviar o voto para blockchain
-      await votar(hashId, candidate);
-
-      // Buscar votos atualizados para mostrar
-      const votos = await totalVotos(candidate);
-
-      alert(
-        `🗳️ Voto registrado com sucesso!\n\n` +
-        `Identificador (hash): ${hashId.slice(0, 16)}...\n` +
-        `Candidato: ${candidate}\n` +
-        `Votos atuais do candidato: ${votos}`
-      );
-    } catch (error) {
-      alert('Erro ao registrar voto: ' + error.message);
-    }
-  };
-
-  if (loading) return <p>Carregando candidatos...</p>;
+  if (loading) return <p>Carregando eleições...</p>;
 
   return (
     <>
       <Header />
       <div className="home-container">
-        <VoteForm candidates={candidates} onVote={handleVote} />
+        <h1>Eleições disponíveis</h1>
+        <div className="eleicoes-grid">
+          {eleicoes.map(e => (
+            <div key={e.id} className="eleicao-card">
+              <h2>{e.titulo}</h2>
+              <p>{e.descricao}</p>
+              <button onClick={() => navigate(`/votar/${e.id}`)}>Votar</button>
+            </div>
+          ))}
+        </div>
+        <button onClick={() => navigate('/criar')} className="create-btn">
+          Criar Eleição
+        </button>
       </div>
       <Footer />
     </>

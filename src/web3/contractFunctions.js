@@ -1,56 +1,61 @@
-let contractInstance = null;
-const contractAddress = 'TFqynJsLEfjVXRiYiHF2dWeuf3PB48Cavw';
+import { getContract } from './tronwebConnection';
 
-// Aguarda até que o window.tronWeb esteja pronto
 async function waitForTronWeb(timeout = 10000) {
-  const pollInterval = 100; // ms
+  const pollInterval = 100;
   let waited = 0;
 
   while (waited < timeout) {
-    if (window.tronWeb && window.tronWeb.ready) {
-      return window.tronWeb;
-    }
-    await new Promise((res) => setTimeout(res, pollInterval));
+    if (window.tronWeb && window.tronWeb.ready) return window.tronWeb;
+    await new Promise(res => setTimeout(res, pollInterval));
     waited += pollInterval;
   }
-
-  throw new Error('TronLink não está conectado. Abra a extensão e conecte-se à rede.');
+  throw new Error('TronLink não está conectado ou TronWeb não está pronto.');
 }
 
-async function getTronWeb() {
-  if (window.tronWeb && window.tronWeb.ready) {
-    return window.tronWeb;
-  }
-  // Se não estiver pronto, aguarda por até 10s
-  return await waitForTronWeb();
-}
-
-async function getContract() {
-  if (!contractInstance) {
-    const tronWeb = await getTronWeb();
-    contractInstance = await tronWeb.contract().at(contractAddress);
-  }
-  return contractInstance;
-}
-
-export async function votar(hashIdentificador, nomeCandidato) {
+export async function listarEleicoes() {
+  await waitForTronWeb();
   const contract = await getContract();
-  return await contract.votar(hashIdentificador, nomeCandidato).send();
+  const [titulos, descricoes] = await contract.listarEleicoes().call();
+
+  return titulos.map((titulo, idx) => ({
+    id: idx,
+    titulo,
+    descricao: descricoes[idx]
+  }));
 }
 
-export async function totalVotos(nomeCandidato) {
+export async function getCandidatos(eleicaoId) {
+  await waitForTronWeb();
   const contract = await getContract();
-  return await contract.totalVotos(nomeCandidato).call();
+  return await contract.getCandidatos(eleicaoId).call();
 }
 
-export async function jaVotou(hashIdentificador) {
+export async function criarEleicao(titulo, descricao, candidatos) {
+  await waitForTronWeb();
   const contract = await getContract();
-  return await contract.jaVotou(hashIdentificador).call();
+  return await contract.criarEleicao(titulo, descricao, candidatos).send({
+    feeLimit: 100_000_000
+  });
 }
 
-export async function getCandidatos() {
+export async function votar(eleicaoId, hashIdentificador, candidato) {
+  await waitForTronWeb();
   const contract = await getContract();
-  return await contract.getCandidatos().call();
+  return await contract.votar(eleicaoId, hashIdentificador, candidato).send({
+    feeLimit: 100_000_000
+  });
+}
+
+export async function jaVotou(eleicaoId, hashIdentificador) {
+  await waitForTronWeb();
+  const contract = await getContract();
+  return await contract.jaVotou(eleicaoId, hashIdentificador).call();
+}
+
+export async function totalVotos(eleicaoId, candidato) {
+  await waitForTronWeb();
+  const contract = await getContract();
+  return await contract.totalVotos(eleicaoId, candidato).call();
 }
 
 export async function gerarHash(texto) {
