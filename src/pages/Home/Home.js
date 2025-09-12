@@ -36,7 +36,15 @@ function Home() {
             <div key={e.id} className="eleicao-card">
               <h2>{e.titulo}</h2>
               <p>{e.descricao}</p>
-              <button onClick={() => navigate(`/votar/${e.id}`)}>Votar</button>
+              {e.encerrada ? (
+                <button onClick={() => navigate(`/resultado/${e.id}`)}>
+                  Ver Resultados
+                </button>
+              ) : (
+                <button onClick={() => navigate(`/votar/${e.id}`)}>
+                  Votar
+                </button>
+              )}
             </div>
           ))}
         </div>

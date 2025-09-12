@@ -1,14 +1,13 @@
-// src/web3/tronwebConnection.js
+export const tronWeb = window.tronWeb;
 
-export const tronWeb = window.tronWeb; // TronLink injeta isso no browser
-
-const CONTRACT_ADDRESS = 'TBUEbRUc9kUW1QCLk9x8BgZvfi3vmABtNG';
+const CONTRACT_ADDRESS = 'TQy2B8uYRV9SXZFa6xcaFNnrJZGNMAsTqQ';
 const CONTRACT_ABI = [
   {
     inputs: [
       { internalType: "string", name: "titulo", type: "string" },
       { internalType: "string", name: "descricao", type: "string" },
-      { internalType: "string[]", name: "candidatos", type: "string[]" }
+      { internalType: "string[]", name: "candidatos", type: "string[]" },
+      { internalType: "string", name: "data", type: "string" }
     ],
     name: "criarEleicao",
     outputs: [],
@@ -20,7 +19,9 @@ const CONTRACT_ABI = [
     name: "listarEleicoes",
     outputs: [
       { internalType: "string[]", name: "titulos", type: "string[]" },
-      { internalType: "string[]", name: "descricoes", type: "string[]" }
+      { internalType: "string[]", name: "descricoes", type: "string[]" },
+      { internalType: "bool[]", name: "encerradas", type: "bool[]" },
+      { internalType: "string[]", name: "datas", type: "string[]" } // adicionado campo data
     ],
     stateMutability: "view",
     type: "function"
@@ -35,7 +36,7 @@ const CONTRACT_ABI = [
   {
     inputs: [
       { internalType: "uint256", name: "eleicaoId", type: "uint256" },
-      { internalType: "bytes32", name: "hashIdentificador", type: "bytes32" },
+      { internalType: "bytes32", name: "hashAuditoria", type: "bytes32" },
       { internalType: "string", name: "nomeCandidato", type: "string" }
     ],
     name: "votar",
@@ -46,7 +47,7 @@ const CONTRACT_ABI = [
   {
     inputs: [
       { internalType: "uint256", name: "eleicaoId", type: "uint256" },
-      { internalType: "bytes32", name: "hashIdentificador", type: "bytes32" }
+      { internalType: "bytes32", name: "hashAuditoria", type: "bytes32" }
     ],
     name: "jaVotou",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
@@ -62,6 +63,25 @@ const CONTRACT_ABI = [
     outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
     stateMutability: "view",
     type: "function"
+  },
+  {
+    inputs: [{ internalType: "uint256", name: "eleicaoId", type: "uint256" }],
+    name: "encerrarEleicao",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    inputs: [{ internalType: "uint256", name: "eleicaoId", type: "uint256" }],
+    name: "getEleicao",
+    outputs: [
+      { internalType: "string", name: "titulo", type: "string" },
+      { internalType: "string", name: "descricao", type: "string" },
+      { internalType: "bool", name: "encerrada", type: "bool" },
+      { internalType: "string", name: "data", type: "string" }
+    ],
+    stateMutability: "view",
+    type: "function"
   }
 ];
 
@@ -71,10 +91,8 @@ export async function getContract() {
   if (!window.tronWeb || !window.tronWeb.ready) {
     throw new Error('TronLink não está conectado.');
   }
-
   if (!contractInstance) {
     contractInstance = await window.tronWeb.contract(CONTRACT_ABI, CONTRACT_ADDRESS);
   }
-
   return contractInstance;
 }

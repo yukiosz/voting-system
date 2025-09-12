@@ -8,16 +8,18 @@ function CreateElection() {
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
   const [candidatos, setCandidatos] = useState('');
+  const [data, setData] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const lista = candidatos.split(',').map(c => c.trim());
-      await criarEleicao(titulo, descricao, lista);
+      await criarEleicao(titulo, descricao, lista, data);
       alert('Eleição criada com sucesso!');
       setTitulo('');
       setDescricao('');
       setCandidatos('');
+      setData('');
     } catch (err) {
       alert('Erro ao criar eleição: ' + err.message);
     }
@@ -47,6 +49,13 @@ function CreateElection() {
             placeholder="Candidatos (separados por vírgula)"
             value={candidatos}
             onChange={e => setCandidatos(e.target.value)}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Data (YYYY/MM/DD)"
+            value={data}
+            onChange={e => setData(e.target.value)}
             required
           />
           <button type="submit">Criar Eleição</button>

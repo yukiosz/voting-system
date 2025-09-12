@@ -7,3 +7,15 @@
   font-weight: 700;
   font-family: Arial, sans-serif;
 }
+
+a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease, border-bottom 0.08s ease;
+}
+
+a:hover {
+  color: #dbeafe; /* azul clarinho */
+  border-bottom: 2px solid #dbeafe;
+}

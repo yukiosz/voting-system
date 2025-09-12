@@ -1,0 +1,47 @@
+.resultado-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  text-align: center;
+  background: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.resultado-container h1 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #2563eb;
+}
+
+.resultado-lista {
+  list-style: none;
+  padding: 0;
+}
+
+.resultado-lista li {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  margin: 8px 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  transition: transform 0.2s;
+}
+
+.resultado-lista li:hover {
+  transform: scale(1.02);
+  background: #f0f7ff;
+}
+
+.candidato {
+  font-weight: 600;
+  color: #333;
+}
+
+.votos {
+  font-weight: 700;
+  color: #2563eb;
+}

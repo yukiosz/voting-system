@@ -2,7 +2,7 @@ import { useState } from 'react';
 import CandidateCard from '../CandidateCard/CandidateCard';
 import './VoteForm.css';
 
-function VoteForm({ candidates, onVote }) {
+function VoteForm({ candidates, onVote, data }) {
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
   const [selectedCandidate, setSelectedCandidate] = useState(null);
@@ -12,8 +12,9 @@ function VoteForm({ candidates, onVote }) {
     if (!selectedCandidate) return alert("Selecione um candidato.");
     if (!id) return alert("Informe o identificador.");
     if (!password) return alert("Informe a senha.");
+    if (!data) return alert("Data da eleição não disponível.");
 
-    onVote({ id, password, candidate: selectedCandidate });
+    onVote({ id, password, candidate: selectedCandidate, data });
   };
 
   return (
