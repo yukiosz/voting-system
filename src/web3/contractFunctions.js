@@ -19,14 +19,14 @@ export async function listarEleicoes() {
   const titulos = result.titulos || result[0] || [];
   const descricoes = result.descricoes || result[1] || [];
   const encerradas = result.encerradas || result[2] || [];
-  const datas = result.datas || result[3] || []; // <- aqui pegamos a data
+  const datas = result.datas || result[3] || [];
 
   return titulos.map((titulo, idx) => ({
     id: idx,
     titulo,
     descricao: descricoes[idx],
     encerrada: encerradas[idx],
-    data: datas[idx] // <- adicionamos a data aqui
+    data: datas[idx]
   }));
 }
 
@@ -44,7 +44,7 @@ export async function getEleicao(eleicaoId) {
     titulo: result[0],
     descricao: result[1],
     encerrada: result[2],
-    data: result[3] // <- retornando data corretamente
+    data: result[3]
   };
 }
 
@@ -54,20 +54,10 @@ export async function criarEleicao(titulo, descricao, candidatos, data) {
   return await contract.criarEleicao(titulo, descricao, candidatos, data).send({ feeLimit: 100_000_000 });
 }
 
-export async function votar(eleicaoId, identificador, candidato) {
+export async function votar(eleicaoId, identificador, email, candidato) {
   await waitForTronWeb();
   const contract = await getContract();
-  const eleicao = await getEleicao(eleicaoId);
-  const hashAuditoria = await gerarHash(identificador + eleicao.titulo + eleicao.data);
-  return await contract.votar(eleicaoId, hashAuditoria, candidato).send({ feeLimit: 100_000_000 });
-}
-
-export async function jaVotou(eleicaoId, identificador) {
-  await waitForTronWeb();
-  const contract = await getContract();
-  const eleicao = await getEleicao(eleicaoId);
-  const hashAuditoria = await gerarHash(identificador + eleicao.titulo + eleicao.data);
-  return await contract.jaVotou(eleicaoId, hashAuditoria).call();
+  return await contract.votar(eleicaoId, identificador, email, candidato).send({ feeLimit: 100_000_000 });
 }
 
 export async function totalVotos(eleicaoId, candidato) {
@@ -76,11 +66,14 @@ export async function totalVotos(eleicaoId, candidato) {
   return await contract.totalVotos(eleicaoId, candidato).call();
 }
 
-export async function gerarHash(texto) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(texto);
-  const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
-  return '0x' + Array.from(new Uint8Array(hashBuffer))
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
+export async function encerrarEleicao(eleicaoId) {
+  await waitForTronWeb();
+  const contract = await getContract();
+  return await contract.encerrarEleicao(eleicaoId).send({ feeLimit: 100_000_000 });
+}
+
+export async function jaVotou(eleicaoId, hashAuditoria) {
+  await waitForTronWeb();
+  const contract = await getContract();
+  return await contract.jaVotou(eleicaoId, hashAuditoria).call();
 }

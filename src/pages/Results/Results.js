@@ -15,7 +15,6 @@ function Resultado() {
   useEffect(() => {
     async function fetchResultados() {
       try {
-        // pega todas eleições e filtra pela id
         const eleicoes = await listarEleicoes();
         const eleicao = eleicoes.find(e => e.id === Number(id));
 
@@ -25,11 +24,9 @@ function Resultado() {
           setTitulo(`Eleição ${id}`);
         }
 
-        // pega candidatos
         const cands = await getCandidatos(id);
         setCandidatos(cands);
 
-        // pega votos de cada candidato
         const votosMap = {};
         for (let c of cands) {
           const count = await totalVotos(id, c);

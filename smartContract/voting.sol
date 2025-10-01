@@ -7,7 +7,8 @@ contract Eleicoes {
         string descricao;
         string[] candidatos;
         mapping(string => uint256) votos;
-        mapping(bytes32 => bool) eleitores;
+        mapping(bytes32 => bool) eleitores; // hash identificador+email+titulo+data
+        mapping(string => bool) emails; // para bloquear reuso de email
         bool existe;
         bool encerrada;
         string data; // YYYY/MM/DD
@@ -36,22 +37,36 @@ contract Eleicoes {
         totalEleicoes++;
     }
 
-    function votar(uint256 eleicaoId, bytes32 hashAuditoria, string memory candidato) public {
+    function votar(
+        uint256 eleicaoId,
+        string memory identificador,
+        string memory email,
+        string memory candidato
+    ) public {
         Eleicao storage e = eleicoes[eleicaoId];
         require(e.existe, "Eleicao nao encontrada");
         require(!e.encerrada, "Eleicao encerrada");
-        require(!e.eleitores[hashAuditoria], "Ja votou");
+        require(!e.emails[email], "Email ja utilizado");
+
+        bytes32 hashVoto = keccak256(
+            abi.encodePacked(identificador, email, e.titulo, e.data)
+        );
+        require(!e.eleitores[hashVoto], "Ja votou");
 
         bool valido = false;
         for (uint i = 0; i < e.candidatos.length; i++) {
-            if (keccak256(bytes(e.candidatos[i])) == keccak256(bytes(candidato))) {
+            if (
+                keccak256(bytes(e.candidatos[i])) ==
+                keccak256(bytes(candidato))
+            ) {
                 valido = true;
                 break;
             }
         }
         require(valido, "Candidato invalido");
 
-        e.eleitores[hashAuditoria] = true;
+        e.emails[email] = true;
+        e.eleitores[hashVoto] = true;
         e.votos[candidato]++;
     }
 
@@ -60,21 +75,47 @@ contract Eleicoes {
         eleicoes[eleicaoId].encerrada = true;
     }
 
-    function getCandidatos(uint256 eleicaoId) public view returns (string[] memory) {
+    function jaVotou(uint256 eleicaoId, bytes32 hashAuditoria) public view returns (bool) {
+        Eleicao storage e = eleicoes[eleicaoId];
+        return e.eleitores[hashAuditoria];
+    }
+
+    function totalVotos(
+        uint256 eleicaoId,
+        string memory candidato
+    ) public view returns (uint256) {
+        return eleicoes[eleicaoId].votos[candidato];
+    }
+
+    function getEleicao(
+        uint256 eleicaoId
+    )
+        public
+        view
+        returns (string memory titulo, string memory descricao, bool encerrada, string memory data)
+    {
+        Eleicao storage e = eleicoes[eleicaoId];
+        require(e.existe, "Eleicao nao encontrada");
+        return (e.titulo, e.descricao, e.encerrada, e.data);
+    }
+
+    function getCandidatos(
+        uint256 eleicaoId
+    ) public view returns (string[] memory) {
         require(eleicoes[eleicaoId].existe, "Eleicao nao encontrada");
         return eleicoes[eleicaoId].candidatos;
     }
 
-    function totalVotos(uint256 eleicaoId, string memory candidato) public view returns (uint256) {
-        return eleicoes[eleicaoId].votos[candidato];
-    }
-
-    function listarEleicoes() public view returns (
-        string[] memory titulos,
-        string[] memory descricoes,
-        bool[] memory encerradas,
-        string[] memory datas
-    ) {
+    function listarEleicoes()
+        public
+        view
+        returns (
+            string[] memory titulos,
+            string[] memory descricoes,
+            bool[] memory encerradas,
+            string[] memory datas
+        )
+    {
         titulos = new string[](totalEleicoes);
         descricoes = new string[](totalEleicoes);
         encerradas = new bool[](totalEleicoes);
@@ -85,21 +126,5 @@ contract Eleicoes {
             encerradas[i] = eleicoes[i].encerrada;
             datas[i] = eleicoes[i].data;
         }
-    }
-
-    function jaVotou(uint256 eleicaoId, bytes32 hashAuditoria) public view returns (bool) {
-        Eleicao storage e = eleicoes[eleicaoId];
-        return e.eleitores[hashAuditoria];
-    }
-
-    function getEleicao(uint256 eleicaoId) public view returns (
-        string memory titulo,
-        string memory descricao,
-        bool encerrada,
-        string memory data
-    ) {
-        Eleicao storage e = eleicoes[eleicaoId];
-        require(e.existe, "Eleicao nao encontrada");
-        return (e.titulo, e.descricao, e.encerrada, e.data);
     }
 }
