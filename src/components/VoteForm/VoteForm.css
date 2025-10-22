@@ -5,12 +5,15 @@
 }
 
 .vote-form input[type="text"],
-.vote-form input[type="password"] {
+.vote-form input[type="password"],
+.vote-form input[type="email"] {
   padding: 8px 12px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 1rem;
   font-family: Arial, sans-serif;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .candidates-grid {

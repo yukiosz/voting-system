@@ -11,25 +11,31 @@ function VoteForm({ candidates, onVote }) {
   const [token, setToken] = useState('');
 
   const handleSendEmail = async (e) => {
-    e.preventDefault();
-    if (!id || !password || !email) return alert("Preencha identificador, senha e email.");
+  e.preventDefault();
+  if (!id || !password || !email) return alert("Preencha identificador, senha e email.");
 
-    try {
-      const res = await fetch('http://localhost:4000/send-confirmation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      });
+  try {
+    const res = await fetch('http://localhost:4000/verificar-eleitor', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        identificacao: id,
+        email,
+        senha: password
+      })
+    });
 
-      if (res.ok) {
-        alert("Email de confirmação enviado. Verifique sua caixa de entrada.");
-      } else {
-        alert("Erro ao enviar email.");
-      }
-    } catch (err) {
-      alert("Erro ao enviar email: " + err.message);
+    const data = await res.json();
+    if (res.ok && data.success) {
+      alert("Email de confirmação enviado. Verifique sua caixa de entrada.");
+    } else {
+      alert(data.message || "Erro ao enviar email.");
     }
-  };
+  } catch (err) {
+    alert("Erro ao enviar email: " + err.message);
+  }
+};
+
 
   const handleConfirmEmail = async (e) => {
     e.preventDefault();
